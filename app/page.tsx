@@ -44,6 +44,11 @@ export default async function Home() {
       href: latestStudyId ? `/study/${latestStudyId}/engagement-risk` : null,
     },
     {
+      title: "Clean results",
+      description: "Compare results without flagged raters",
+      href: latestStudyId ? `/study/${latestStudyId}/clean-results` : null,
+    },
+    {
       title: "Study-to-study comparison",
       description: "Compare two studies",
       href: "/reports/study-comparison",
