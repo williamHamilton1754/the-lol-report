@@ -10,7 +10,9 @@ import {
 } from "@/utils/supabase/superadmin";
 
 const isPublicRoute = (pathname: string) =>
-  pathname === "/login" || pathname.startsWith("/auth/callback");
+  pathname === "/login" ||
+  pathname.startsWith("/auth/callback") ||
+  pathname === "/api/keepalive";
 
 const redirectToLogin = (request: NextRequest, error?: string) => {
   const loginUrl = new URL("/login", request.url);
