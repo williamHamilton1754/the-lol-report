@@ -148,6 +148,19 @@ export default async function StudyCleanResultsPage({
     .sort((left, right) => Math.abs(right.rank_change ?? 0) - Math.abs(left.rank_change ?? 0))
     .slice(0, MOVER_ROWS_SHOWN);
 
+  // A plain-English recap Dana can paste into a team update.
+  const topCaption = captions.find((caption) => caption.after.rank === 1);
+  const shareSummary = [
+    summary.excluded_raters === 0
+      ? `${getStudyLabel(study)}: no raters excluded; results use all ${summary.total_votes.toLocaleString()} votes.`
+      : `${getStudyLabel(study)}: excluding ${summary.excluded_raters.toLocaleString()} raters removed ${summary.excluded_votes.toLocaleString()} of ${summary.total_votes.toLocaleString()} votes (${formatPercent(summary.excluded_votes / Math.max(summary.total_votes, 1))}). ${summary.top_captions_replaced} of the top ${TOP_CAPTION_COUNT} captions changed, and the biggest rank move was ${summary.biggest_rank_move} places.`,
+    topCaption && topCaption.after.positive_rate !== null
+      ? `Top caption: "${topCaption.content}" (${formatPercent(topCaption.after.positive_rate)} positive over ${topCaption.after.votes.toLocaleString()} votes).`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <main className="page-shell min-h-screen p-6 text-foreground">
       <section className="app-panel mx-auto w-full max-w-7xl space-y-6 rounded-2xl p-6">
@@ -218,6 +231,13 @@ export default async function StudyCleanResultsPage({
           ) : null}
           <p className="app-muted text-sm">Study window: {formatStudyWindow(study)}</p>
         </header>
+
+        <section className="app-card space-y-1 rounded-xl p-4">
+          <p className="app-kicker text-xs font-semibold uppercase tracking-wide">
+            Summary to share
+          </p>
+          <p className="select-all text-sm leading-6">{shareSummary}</p>
+        </section>
 
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <article className="app-card app-stat-card-rose rounded-xl p-4">
