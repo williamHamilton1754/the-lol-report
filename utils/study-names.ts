@@ -1,3 +1,5 @@
+import { STUDY_TITLES } from "./study-titles";
+
 // Study names are stored as slugs like "10-12--0--first-day-intern-energy".
 // These helpers turn them into readable labels for every report. Display only:
 // the stored slug, study IDs and URLs stay the same.
@@ -38,7 +40,8 @@ export const getReadableStudyName = (slug: string | null) => {
     .replace(/^-+0-+/, "")
     .replace(/-\d{1,2}-\d{1,2}(?:-(?:\d{4}|\d{2}))?$/, "")
     .replace(new RegExp(`(^|-)${MONTH}-?\\d{1,2}(?=[a-z]?(?:-|$))`, "gi"), "$1")
-    .replace(/(\d+)img\b/gi, (_, count: string) => `${count}-image${count === "1" ? "" : "s"}`)
+    // Sizes like "38img" don't match the real image counts, so they are left out.
+    .replace(/(^|-)\d+img(?=-|$)/gi, "$1")
     .split(/[-_\s]+/)
     .filter(Boolean)
     .join(" ")
@@ -49,42 +52,11 @@ export const getReadableStudyName = (slug: string | null) => {
   return name ? capitalize(name) : null;
 };
 
-// Quick Study fills in descriptions like
-// "Created with Quick Study (image + caption pairs)."
-const getQuickStudyType = (description: string | null) =>
-  description
-    ?.match(/^Created with Quick Study \((.+)\)\.?$/i)?.[1]
-    .replace("image + caption pairs", "image and caption pairs") ?? null;
-
-// The name plus what kind of study it is, when the description says so.
-const getStudyTitle = (study: NamedStudy) => {
-  const type = getQuickStudyType(study.description);
-  let name = getReadableStudyName(study.slug) ?? (study.slug || type ? null : study.description);
-
-  // Put a size like "38 images" last, after what the study is about.
-  const size = name?.match(/\b\d+ (?:images?|captions)\b/i)?.[0];
-  if (name && size) {
-    name = name.replace(size, "").replace(/\s+/g, " ").trim() || null;
-  }
-
-  if (!type) {
-    return capitalize([name, size].filter(Boolean).join(", ")) || null;
-  }
-
-  // Names like "wag bag mug" are three random words, not a topic.
-  if (name && /^[a-z]{3}(?: [a-z]{3}){2}$/i.test(name)) {
-    return `Quick study, ${type}, code ${name.toLowerCase().replaceAll(" ", "-")}`;
-  }
-
-  // What is left may be a copy marker, such as "B" or "2".
-  const topic = name?.replace(/^quick\b\s*/i, "") ?? "";
-  if (!topic || /^(?:version )?[a-z0-9]$/i.test(topic)) {
-    const version = topic.replace(/^version /i, "");
-    return ["Quick study", type, size, version && `version ${version}`].filter(Boolean).join(", ");
-  }
-
-  return `Quick study: ${[capitalize(topic), size].filter(Boolean).join(", ")}`;
-};
+// A written title if there is one, otherwise the cleaned-up stored name.
+const getStudyTitle = (study: NamedStudy) =>
+  (study.slug && STUDY_TITLES[study.slug]) ??
+  getReadableStudyName(study.slug) ??
+  (study.slug ? null : study.description);
 
 export const getStudyLabel = (study: NamedStudy) => {
   const title = getStudyTitle(study);
