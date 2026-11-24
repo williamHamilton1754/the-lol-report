@@ -324,6 +324,10 @@ export const buildShareSummary = (
   captions: CleanResultsCaption[],
   summary: CleanResultsSummary,
 ) => {
+  if (summary.total_votes === 0) {
+    return `Study ${studyLabel}: no votes yet, so there are no results to share.`;
+  }
+
   const totalVotes = pluralize(summary.total_votes, "vote");
   const top = captions.find((caption) => caption.after.rank === 1);
 
@@ -340,10 +344,10 @@ export const buildShareSummary = (
 };
 
 const PRESET_DESCRIPTIONS: Record<CleanResultsPreset, string> = {
-  high: "Raters rated high risk were excluded.",
-  "high-medium": "Raters rated high or medium risk were excluded.",
-  none: "No raters were excluded.",
-  custom: "Excluded raters were picked by hand.",
+  high: "Exclusion setting: raters rated high risk.",
+  "high-medium": "Exclusion setting: raters rated high or medium risk.",
+  none: "Exclusion setting: nobody.",
+  custom: "Exclusion setting: raters picked by hand.",
 };
 
 // How the numbers were produced, as a separate file. Adding this text to the
