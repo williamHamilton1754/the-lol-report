@@ -322,25 +322,6 @@ const fetchRowsWithAdaptiveChunks = async <TRow,>({
   return rows;
 };
 
-export const getStudyLabel = (study: StudySummary) => {
-  if (study.slug) {
-    return `${study.id} - ${study.slug}`;
-  }
-
-  if (study.description) {
-    return `${study.id} - ${study.description}`;
-  }
-
-  return `Study ${study.id}`;
-};
-
-export const formatStudyWindow = (study: StudySummary) => {
-  const start = study.start_datetime_utc ?? study.created_datetime_utc;
-  const end = study.end_datetime_utc ?? "n/a";
-
-  return `${start} to ${end}`;
-};
-
 export const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
 const getProfileLabel = (profileId: string, profile?: ProfileSummary) => {
@@ -854,3 +835,5 @@ export const buildStudyEngagementRiskReport = ({
     user_summaries: scoredSummaries,
   };
 };
+
+export { formatStudyWindow, getStudyLabel } from "./study-names";

@@ -8,6 +8,7 @@ import type { Database, Tables } from "@/src/types/supabase";
 import { formatDurationFromMinutes } from "@/utils/format-duration";
 import { createClient } from "@/utils/supabase/server";
 import type { StudyCaptionVoteEventRow } from "@/utils/study-vote-events";
+import { formatStudyWindow, getStudyLabel } from "@/utils/study-names";
 
 const DEFAULT_MIN_VOTES = 2;
 const MAX_MIN_VOTES = 1000;
@@ -255,25 +256,6 @@ const fetchRowsWithAdaptiveChunks = async <TRow,>({
   }
 
   return rows;
-};
-
-const getStudyLabel = (study: StudySummary) => {
-  if (study.slug) {
-    return `${study.id} - ${study.slug}`;
-  }
-
-  if (study.description) {
-    return `${study.id} - ${study.description}`;
-  }
-
-  return `Study ${study.id}`;
-};
-
-const formatStudyWindow = (study: StudySummary) => {
-  const start = study.start_datetime_utc ?? study.created_datetime_utc;
-  const end = study.end_datetime_utc ?? "n/a";
-
-  return `${start} to ${end}`;
 };
 
 const getEffectiveStudyStart = (study: StudySummary): StudyStartInfo => ({

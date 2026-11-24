@@ -8,6 +8,7 @@ import {
   isPositiveStudyVote,
 } from "@/utils/study-vote-events";
 import { createClient } from "@/utils/supabase/server";
+import { getShortStudyLabel } from "@/utils/study-names";
 
 const DEFAULT_STUDY_LIMIT = 8;
 const MAX_STUDY_LIMIT = 52;
@@ -151,14 +152,6 @@ const parseBoundedInteger = (
   }
 
   return { value: parsed, isValid: true };
-};
-
-const getChartStudyLabel = (study: StudySummary) => {
-  if (study.slug) {
-    return study.slug.length <= 14 ? study.slug : `${study.slug.slice(0, 14)}…`;
-  }
-
-  return `S${study.id}`;
 };
 
 const getStudies = async (
@@ -328,7 +321,7 @@ export default async function WeeklyStudySummaryPage({
   });
   const chartRows = [...studyMetrics].reverse().map((metric) => ({
     study_id: metric.study.id,
-    study_label: getChartStudyLabel(metric.study),
+    study_label: getShortStudyLabel(metric.study),
     weighted_score_pct: roundScore(metric.weighted_score * 100),
     total_votes: metric.total_votes,
     caption_count: metric.caption_count,

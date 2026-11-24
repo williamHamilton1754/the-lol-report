@@ -7,6 +7,7 @@ import {
   isPositiveStudyVote,
 } from "@/utils/study-vote-events";
 import { createClient } from "@/utils/supabase/server";
+import { formatStudyWindow, getStudyLabel } from "@/utils/study-names";
 
 const QUERY_CHUNK_SIZE = 120;
 const MIN_QUERY_CHUNK_SIZE = 1;
@@ -258,25 +259,6 @@ const formatDeltaPoints = (score: number) =>
 const formatSignedInteger = (value: number) => `${value >= 0 ? "+" : ""}${value}`;
 
 const formatSignedDecimal = (value: number) => `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
-
-const getStudyLabel = (study: StudySummary) => {
-  if (study.slug) {
-    return `${study.id} - ${study.slug}`;
-  }
-
-  if (study.description) {
-    return `${study.id} - ${study.description}`;
-  }
-
-  return `Study ${study.id}`;
-};
-
-const formatStudyWindow = (study: StudySummary) => {
-  const start = study.start_datetime_utc ?? "n/a";
-  const end = study.end_datetime_utc ?? "n/a";
-
-  return `${start} to ${end}`;
-};
 
 const computeMedian = (values: number[]) => {
   if (values.length === 0) {

@@ -18,6 +18,7 @@ import {
   type StudyCaptionVoteEventRow,
 } from "@/utils/study-vote-events";
 import { formatDurationFromMinutes } from "@/utils/format-duration";
+import { formatStudyWindow, getStudyLabel } from "@/utils/study-names";
 
 const QUERY_CHUNK_SIZE = 120;
 const MIN_QUERY_CHUNK_SIZE = 1;
@@ -252,25 +253,6 @@ const fetchRowsWithAdaptiveChunks = async <TRow,>({
   }
 
   return rows;
-};
-
-const getStudyLabel = (study: StudySummary) => {
-  if (study.slug) {
-    return `${study.id} - ${study.slug}`;
-  }
-
-  if (study.description) {
-    return `${study.id} - ${study.description}`;
-  }
-
-  return `Study ${study.id}`;
-};
-
-const formatStudyWindow = (study: StudySummary) => {
-  const start = study.start_datetime_utc ?? study.created_datetime_utc;
-  const end = study.end_datetime_utc ?? "n/a";
-
-  return `${start} to ${end}`;
 };
 
 const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;

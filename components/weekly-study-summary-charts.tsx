@@ -276,7 +276,7 @@ export function WeeklyStudySummaryCharts({ data }: WeeklyStudySummaryChartsProps
                   }}
                   labelFormatter={(_, payload) => {
                     const point = payload?.[0]?.payload as WeeklyStudyChartRow | undefined;
-                    return point ? `Study ${point.study_id} (${point.study_label})` : "";
+                    return point ? `Study ${point.study_label}` : "";
                   }}
                 />
                 <Scatter name="Studies" data={data} fill={COLORS.scatter} />

@@ -222,6 +222,9 @@ export default async function StudyCleanResultsPage({
             </p>
           ) : null}
           <p className="app-muted text-sm">Study window: {formatStudyWindow(study)}</p>
+          {study.slug ? (
+            <p className="app-muted mt-1 text-xs">Original name: {study.slug}</p>
+          ) : null}
         </header>
 
         <section className="app-card space-y-1 rounded-xl p-4">

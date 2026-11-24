@@ -325,7 +325,7 @@ export const buildShareSummary = (
   summary: CleanResultsSummary,
 ) => {
   if (summary.total_votes === 0) {
-    return `Study ${studyLabel}: no votes yet, so there are no results to share.`;
+    return `${studyLabel}: no votes yet, so there are no results to share.`;
   }
 
   const totalVotes = pluralize(summary.total_votes, "vote");
@@ -333,8 +333,8 @@ export const buildShareSummary = (
 
   return [
     summary.excluded_raters === 0
-      ? `Study ${studyLabel}: no raters excluded; results use all ${totalVotes}.`
-      : `Study ${studyLabel}: excluding ${pluralize(summary.excluded_raters, "rater")} removed ${summary.excluded_votes.toLocaleString("en-US")} of ${totalVotes} (${formatShare(summary.excluded_votes, summary.total_votes)}). ${pluralize(summary.top_captions_replaced, "caption")} dropped out of the top ${TOP_CAPTION_COUNT}, and the biggest rank move was ${pluralize(summary.biggest_rank_move, "place")}.`,
+      ? `${studyLabel}: no raters excluded; results use all ${totalVotes}.`
+      : `${studyLabel}: excluding ${pluralize(summary.excluded_raters, "rater")} removed ${summary.excluded_votes.toLocaleString("en-US")} of ${totalVotes} (${formatShare(summary.excluded_votes, summary.total_votes)}). ${pluralize(summary.top_captions_replaced, "caption")} dropped out of the top ${TOP_CAPTION_COUNT}, and the biggest rank move was ${pluralize(summary.biggest_rank_move, "place")}.`,
     top && top.after.positive_rate !== null
       ? `Top caption: "${top.content}" (${formatShare(top.after.positive_rate, 1)} positive over ${pluralize(top.after.votes, "vote")}).`
       : "",

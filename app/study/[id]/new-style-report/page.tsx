@@ -13,6 +13,7 @@ import {
 import type { Database, Tables } from "@/src/types/supabase";
 import { formatDurationFromMinutes } from "@/utils/format-duration";
 import { createClient } from "@/utils/supabase/server";
+import { getStudyLabel } from "@/utils/study-names";
 
 const NEW_STYLE_MIN_STUDY_ID = 7;
 const DEFAULT_MIN_USER_NAVIGATION_EVENTS = 1;
@@ -461,18 +462,6 @@ const getProfilesById = async (
   return profilesById;
 };
 
-const getStudyLabel = (study: StudySummary) => {
-  if (study.slug) {
-    return `${study.id} - ${study.slug}`;
-  }
-
-  if (study.description) {
-    return `${study.id} - ${study.description}`;
-  }
-
-  return `Study ${study.id}`;
-};
-
 const getProfileLabel = (profileId: string, profile?: ProfileSummary) => {
   const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim();
   if (fullName) {
@@ -877,6 +866,9 @@ export default async function NewStyleReportPage({
               Current Study
             </p>
             <p className="mt-2 text-2xl font-bold sm:text-3xl">{getStudyLabel(report.study)}</p>
+            {report.study.slug ? (
+              <p className="app-muted mt-1 text-xs">Original name: {report.study.slug}</p>
+            ) : null}
             <p className="app-muted mt-2 text-sm">
               Study window:{" "}
               <LocalStudyWindow
