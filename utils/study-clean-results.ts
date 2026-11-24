@@ -311,3 +311,60 @@ export const excludedRatersToCsv = (raters: ScoredRater[]) =>
       rater.total_votes,
     ]),
   ]);
+
+const formatShare = (part: number, whole: number) =>
+  `${((part / Math.max(whole, 1)) * 100).toFixed(1)}%`;
+
+const pluralize = (count: number, noun: string) =>
+  `${count.toLocaleString("en-US")} ${noun}${count === 1 ? "" : "s"}`;
+
+// A plain-English recap to paste into a team update.
+export const buildShareSummary = (
+  studyLabel: string,
+  captions: CleanResultsCaption[],
+  summary: CleanResultsSummary,
+) => {
+  const totalVotes = pluralize(summary.total_votes, "vote");
+  const top = captions.find((caption) => caption.after.rank === 1);
+
+  return [
+    summary.excluded_raters === 0
+      ? `Study ${studyLabel}: no raters excluded; results use all ${totalVotes}.`
+      : `Study ${studyLabel}: excluding ${pluralize(summary.excluded_raters, "rater")} removed ${summary.excluded_votes.toLocaleString("en-US")} of ${totalVotes} (${formatShare(summary.excluded_votes, summary.total_votes)}). ${pluralize(summary.top_captions_replaced, "caption")} dropped out of the top ${TOP_CAPTION_COUNT}, and the biggest rank move was ${pluralize(summary.biggest_rank_move, "place")}.`,
+    top && top.after.positive_rate !== null
+      ? `Top caption: "${top.content}" (${formatShare(top.after.positive_rate, 1)} positive over ${pluralize(top.after.votes, "vote")}).`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+const PRESET_DESCRIPTIONS: Record<CleanResultsPreset, string> = {
+  high: "Raters rated high risk were excluded.",
+  "high-medium": "Raters rated high or medium risk were excluded.",
+  none: "No raters were excluded.",
+  custom: "Excluded raters were picked by hand.",
+};
+
+// How the numbers were produced, as a separate file. Adding this text to the
+// top of the CSV would break read.csv() and Excel's column headers.
+export const buildMethodNotes = ({
+  shareSummary,
+  preset,
+  minVotes,
+}: {
+  shareSummary: string;
+  preset: CleanResultsPreset;
+  minVotes: number;
+}) =>
+  [
+    shareSummary,
+    "",
+    "How these results were produced",
+    `- ${PRESET_DESCRIPTIONS[preset]} Risk levels come from the engagement risk report.`,
+    `- Raters needed at least ${pluralize(minVotes, "vote")} to be scored. Raters below that were not scored, so they were not excluded.`,
+    '- Positive % is the share of votes that were "funny" or "very funny".',
+    `- A caption needs at least ${MIN_VOTES_TO_RANK} votes to be ranked. Ties go to the caption with more votes.`,
+    "- The study data was not changed. Exclusions apply only to this report.",
+    "",
+  ].join("\r\n");

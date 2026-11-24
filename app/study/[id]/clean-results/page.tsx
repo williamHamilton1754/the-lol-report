@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CopyToClipboardButton } from "@/components/copy-to-clipboard-button";
 import { ReportLoadForm } from "@/components/report-load-form";
 import { StudyCleanResultsDistribution } from "@/components/study-clean-results-distribution";
 import {
+  buildShareSummary,
   computeCaptionDistribution,
   getShareBeaten,
   MIN_VOTES_TO_RANK,
@@ -149,17 +151,7 @@ export default async function StudyCleanResultsPage({
     .slice(0, MOVER_ROWS_SHOWN);
 
   // A plain-English recap Dana can paste into a team update.
-  const topCaption = captions.find((caption) => caption.after.rank === 1);
-  const shareSummary = [
-    summary.excluded_raters === 0
-      ? `${getStudyLabel(study)}: no raters excluded; results use all ${summary.total_votes.toLocaleString()} votes.`
-      : `${getStudyLabel(study)}: excluding ${summary.excluded_raters.toLocaleString()} raters removed ${summary.excluded_votes.toLocaleString()} of ${summary.total_votes.toLocaleString()} votes (${formatPercent(summary.excluded_votes / Math.max(summary.total_votes, 1))}). ${summary.top_captions_replaced} of the top ${TOP_CAPTION_COUNT} captions changed, and the biggest rank move was ${summary.biggest_rank_move} places.`,
-    topCaption && topCaption.after.positive_rate !== null
-      ? `Top caption: "${topCaption.content}" (${formatPercent(topCaption.after.positive_rate)} positive over ${topCaption.after.votes.toLocaleString()} votes).`
-      : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const shareSummary = buildShareSummary(getStudyLabel(study), captions, summary);
 
   return (
     <main className="page-shell min-h-screen p-6 text-foreground">
@@ -233,9 +225,12 @@ export default async function StudyCleanResultsPage({
         </header>
 
         <section className="app-card space-y-1 rounded-xl p-4">
-          <p className="app-kicker text-xs font-semibold uppercase tracking-wide">
-            Summary to share
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="app-kicker text-xs font-semibold uppercase tracking-wide">
+              Summary to share
+            </p>
+            <CopyToClipboardButton text={shareSummary} />
+          </div>
           <p className="select-all text-sm leading-6">{shareSummary}</p>
         </section>
 
@@ -433,6 +428,12 @@ export default async function StudyCleanResultsPage({
                 className="app-button rounded-lg px-3 py-2 text-sm font-medium transition"
               >
                 Download excluded raters (CSV)
+              </a>
+              <a
+                href={`${pagePath}/export?file=notes&${settingsQuery}`}
+                className="app-button rounded-lg px-3 py-2 text-sm font-medium transition"
+              >
+                Download method notes (TXT)
               </a>
             </div>
           </div>
