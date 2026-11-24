@@ -473,19 +473,6 @@ const getStudyVoteTimeFilterState = ({
 
 const formatPercent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
-const formatTimestamp = (value: string | null) => {
-  if (!value) {
-    return "n/a";
-  }
-
-  const timestamp = Date.parse(value);
-  if (!Number.isFinite(timestamp)) {
-    return value;
-  }
-
-  return utcDateTimeFormatter.format(new Date(timestamp));
-};
-
 const getCaptionText = (content: string | null) => {
   const trimmed = content?.trim();
   if (!trimmed) {
